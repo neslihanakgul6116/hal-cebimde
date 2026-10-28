@@ -1,0 +1,467 @@
+<title>Hal Cebimde</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root {
+  --bg: #F3F6F0; --surface: #FFFFFF; --ink: #15231A; --muted: #5A6A5F; --line: #DAE2D7; --chip: #E6EDE2;
+  --band: #1D4531; --band-ink: #F3F6F0; --band-muted: #A9C2B2; --accent: #E8B520; --accent-ink: #1C2410;
+  --up: #BF3A29; --down: #1B7C53;
+  --f-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --f-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 14px; --nav-h: 64px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1611; --surface: #152019; --ink: #E5EEE7; --muted: #98A99E; --line: #24332A; --chip: #1D2B22;
+    --band: #10291C; --band-ink: #E5EEE7; --band-muted: #7FA08B; --accent: #F0C53A; --accent-ink: #1A1A08;
+    --up: #F07562; --down: #4DC08B; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1611; --surface: #152019; --ink: #E5EEE7; --muted: #98A99E; --line: #24332A; --chip: #1D2B22;
+  --band: #10291C; --band-ink: #E5EEE7; --band-muted: #7FA08B; --accent: #F0C53A; --accent-ink: #1A1A08;
+  --up: #F07562; --down: #4DC08B; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band); }
+* { box-sizing: border-box; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.band { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--band); color: var(--band-ink); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band-inner { max-width: 560px; margin: 0 auto; padding-block: 14px 12px; display: grid; gap: 4px; }
+.brand { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 1.45rem; letter-spacing: -0.01em; }
+.brand h1 b { color: var(--accent); font-weight: 800; }
+.city { border: 1px solid var(--band-muted); background: transparent; color: var(--band-ink); border-radius: 999px; padding: 4px 10px; font-size: 0.82rem; }
+.bulletin { margin: 0; font-size: 0.82rem; color: var(--band-muted); font-variant-numeric: tabular-nums; }
+.bulletin strong { color: var(--band-ink); font-weight: 600; }
+.demo { margin: 0; padding: 8px 12px; border-radius: 10px; font-size: 0.8rem; background: var(--accent); color: var(--accent-ink); }
+main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 14px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px)); }
+.view { display: grid; gap: 12px; }
+.search { width: 100%; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.chip { flex: none; border: 0; border-radius: 999px; padding: 7px 13px; cursor: pointer; background: var(--chip); color: var(--ink); font-size: 0.86rem; font-weight: 500; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.chip small { opacity: 0.7; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 11px 14px; border-top: 1px solid var(--line); }
+.row:first-child { border-top: 0; }
+.row .name { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.row .meta { grid-column: 1; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.row .price { grid-row: 1 / span 2; grid-column: 2; text-align: right; display: grid; gap: 2px; justify-items: end; }
+.price .avg { font-family: var(--f-num); font-weight: 600; font-size: 1.08rem; font-variant-numeric: tabular-nums; }
+.price .avg span { font-family: var(--f-body); font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.delta { font-family: var(--f-num); font-size: 0.74rem; padding: 1px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.delta.up { color: var(--up); background: color-mix(in srgb, var(--up) 12%, transparent); }
+.delta.down { color: var(--down); background: color-mix(in srgb, var(--down) 12%, transparent); }
+.delta.flat { color: var(--muted); }
+.section-label { margin: 6px 2px -4px; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.locate { display: grid; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+.locate h2 { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; text-wrap: balance; }
+.btn { border: 0; border-radius: 12px; padding: 11px 16px; cursor: pointer; font-weight: 600; background: var(--ink); color: var(--bg); }
+.btn.accent { background: var(--accent); color: var(--accent-ink); }
+.loc-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.loc-row select { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); }
+.status { margin: 0; font-size: 0.84rem; color: var(--muted); }
+.toggle { display: flex; gap: 8px; align-items: center; font-size: 0.88rem; }
+.market { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.market:first-child { border-top: 0; }
+.market .title { font-weight: 600; min-width: 0; }
+.market .dist { font-family: var(--f-num); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.market .sub { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+.days { display: inline-flex; gap: 3px; }
+.day { min-width: 30px; text-align: center; padding: 2px 4px; border-radius: 6px; font-size: 0.72rem; background: var(--chip); color: var(--muted); }
+.day.on { background: var(--ink); color: var(--bg); }
+.day.on.today { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.market a { color: var(--ink); font-weight: 600; text-underline-offset: 3px; cursor: pointer;}
+.lock { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 12px; }
+.lock h2 { margin: 0; font-family: var(--f-display); font-size: 1.2rem; font-weight: 600; text-wrap: balance; }
+.lock p { margin: 0; color: var(--muted); }
+.ghost { opacity: 0.55; pointer-events: none; }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.plan { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: grid; gap: 2px; }
+.plan b { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+.plan small { color: var(--muted); }
+.note { margin: 0; font-size: 0.85rem; padding: 10px 12px; border-radius: 10px; background: var(--chip); }
+.empty { padding: 18px 14px; color: var(--muted); text-align: center; }
+.foot { font-size: 0.75rem; color: var(--muted); text-align: center; margin: 4px 0 0; }
+.foot a { color: inherit; }
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.nav-inner { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); height: var(--nav-h); }
+.tab { border: 0; background: none; cursor: pointer; display: grid; place-items: center; align-content: center; gap: 2px; color: var(--muted); font-size: 0.78rem; font-weight: 600; }
+.tab svg { width: 22px; height: 22px; }
+.tab[aria-selected="true"] { color: var(--ink); }
+.tab[aria-selected="true"] .dot { background: var(--accent); }
+.dot { width: 18px; height: 3px; border-radius: 3px; background: transparent; }
+@media (prefers-reduced-motion: no-preference) {
+  .row, .market { animation: rise 0.25s ease-out both; }
+  @keyframes rise { from { transform: translateY(4px); } to { transform: none; } }
+}
+</style>
+
+<header class="band">
+  <div class="band-inner">
+    <div class="brand">
+      <h1>Hal <b>Cebimde</b></h1>
+      <div style="display:flex; gap:8px;">
+        <button id="theme-toggle" class="city" style="cursor:pointer; border:none; padding: 4px 8px;" title="Tema Değiştir">🌙</button>
+        <select class="city" id="city" aria-label="Şehir">
+          <option value="Bursa">Bursa</option>
+          <option value="İzmir">İzmir</option>
+        </select>
+      </div>
+    </div>
+    <p class="bulletin" id="bulletin">Bülten yükleniyor…</p>
+  </div>
+</header>
+
+<main>
+  <p class="demo" id="demo" hidden>Örnek veri gösteriliyor. Gerçek fiyatlar ve pazarlar için yerel sunucuyu çalıştırın.</p>
+
+  <section class="view" id="view-fiyatlar" aria-label="Fiyatlar">
+    <input class="search" id="q" type="search" placeholder="Ürün ara: domates, hamsi…" autocomplete="off" aria-label="Ürün ara">
+    <div class="chips" id="cats" role="group" aria-label="Kategori"></div>
+    <div id="price-groups" class="view"></div>
+    <p class="foot" id="price-source"></p>
+  </section>
+
+  <section class="view" id="view-pazarlar" aria-label="Pazarlar" hidden>
+    <div class="locate">
+      <h2>Bugün yakınınızda hangi pazar kurulu?</h2>
+      <div class="loc-row">
+        <button class="btn accent" id="locate" type="button">Konumumu bul</button>
+        <select id="district" aria-label="Ya da ilçe seçin"></select>
+      </div>
+      <p class="status" id="loc-status">Konum telefonunuzda kalır; sunucuya gönderilmez.</p>
+      <label class="toggle"><input type="checkbox" id="only-today" checked> Yalnızca bugün kurulanlar</label>
+    </div>
+    <ul class="list" id="markets"></ul>
+    <p class="foot" id="market-source"></p>
+  </section>
+
+  <section class="view" id="view-alarmlar" aria-label="Alarmlar" hidden>
+    <div class="lock">
+      <h2>Fiyat düşünce sabah 06:00'da haber alın</h2>
+      <p>İşletme paketleriyle takip listesi, fiyat alarmı, 30 günlük trend ve kâr marjı hesabı açılır.</p>
+      <ul class="list ghost" aria-hidden="true">
+        <li class="row"><span class="name">Domates (Kg)</span><span class="meta">%10 düşerse bildir</span><span class="price"><span class="delta down">▼ alarm</span></span></li>
+        <li class="row"><span class="name">Hamsi (Kg)</span><span class="meta">250 ₺ altına inerse</span><span class="price"><span class="delta flat">bekliyor</span></span></li>
+      </ul>
+      <div class="plans">
+        <div class="plan"><span>Pazarcı</span><b>149 ₺/ay</b><small>sabah bildirimi, 10 alarm</small></div>
+        <div class="plan"><span>İşletme</span><b>299 ₺/ay</b><small>sınırsız alarm, trend</small></div>
+        <div class="plan"><span>Pro</span><b>699 ₺/ay</b><small>şehir kıyası, dışa aktarım</small></div>
+      </div>
+      <button class="btn" id="trial" type="button">14 gün ücretsiz dene</button>
+      <p class="note" id="trial-note" hidden>Abonelik adımı Faz 2'de açılacak. Şimdilik bu ekran tasarım önizlemesidir.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="nav" aria-label="Bölümler">
+  <div class="nav-inner" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-view="fiyatlar" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.6"/></svg>
+      Fiyatlar<span class="dot"></span>
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-view="pazarlar" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+      Pazarlar<span class="dot"></span>
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-view="alarmlar" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      Alarmlar<span class="dot"></span>
+    </button>
+  </div>
+</nav>
+
+<script>
+(() => {
+  "use strict";
+
+  const DEMO_BULTEN = {
+    sehir: "Bursa", tarih: "2026-10-27", onceki_tarih: "2026-10-26",
+    kaynak: "Bursa Büyükşehir Belediyesi",
+    urunler: [
+      ["Meyve", "Ahududu", "Kg", 200, 240, 4.3], ["Meyve", "Armut", "Kg", 10, 80, 0],
+      ["Meyve", "Ayva", "Kg", 10, 80, -5.9], ["Meyve", "Böğürtlen", "Kg", 90, 220, 3.2],
+      ["Meyve", "Çağla", "Kg", 30, 30, 0], ["Meyve", "Elma Starking", "Kg", 15, 45, -6.3],
+      ["Meyve", "Mandalina", "Kg", 20, 40, -12.0], ["Meyve", "Nar", "Kg", 30, 60, 7.1],
+      ["Sebze", "Domates", "Kg", 15, 35, -10.7], ["Sebze", "Biber Çarliston", "Kg", 30, 60, 12.5],
+      ["Sebze", "Patlıcan", "Kg", 20, 40, 0], ["Sebze", "Salatalık", "Kg", 15, 30, -4.3],
+      ["Sebze", "Ispanak", "Kg", 20, 35, 2.0], ["Sebze", "Maydanoz", "Bağ", 5, 10, 0],
+      ["İthal", "Muz", "Kg", 60, 90, 1.4], ["İthal", "Ananas", "Adet", 120, 180, 0],
+      ["Pelajik Su Ürünleri", "Hamsi", "Kg", 150, 250, -16.7], ["Pelajik Su Ürünleri", "Palamut", "Kg", 200, 300, -9.1],
+      ["Kültür Su Ürünleri", "Levrek", "Kg", 300, 380, 0], ["Kültür Su Ürünleri", "Çupra", "Kg", 280, 350, 3.3],
+    ].map(([kategori, urun, birim, asgari, azami, degisim]) =>
+      ({ kategori, urun, birim, asgari, azami, ortalama: (asgari + azami) / 2, degisim_yuzde: degisim })),
+  };
+  const DEMO_PAZARLAR = [
+    ["demo-1", "Örnek Pazar · Osmangazi", "Osmangazi", 40.1902, 29.0525, [2, 6]],
+    ["demo-2", "Örnek Pazar · Nilüfer", "Nilüfer", 40.2185, 28.9772, [2]],
+    ["demo-3", "Örnek Pazar · Nilüfer Batı", "Nilüfer", 40.2251, 28.8790, [4]],
+    ["demo-4", "Örnek Pazar · Yıldırım", "Yıldırım", 40.1958, 29.1094, [3, 7]],
+    ["demo-5", "Örnek Pazar · Gürsu", "Gürsu", 40.2196, 29.1933, [5]],
+    ["demo-6", "Örnek Pazar · Kestel", "Kestel", 40.1988, 29.2140, [1, 4]],
+    ["demo-7", "Örnek Pazar · Mudanya", "Mudanya", 40.3748, 28.8839, [6]],
+    ["demo-8", "Örnek Pazar · Gemlik", "Gemlik", 40.4311, 29.1583, [3]],
+    ["demo-9", "Örnek Pazar · Osmangazi Kuzey", "Osmangazi", 40.2090, 29.0420, [1, 5]],
+    ["demo-10", "Örnek Pazar · Yıldırım Doğu", "Yıldırım", 40.1830, 29.1300, [6]],
+  ].map(([id, ad, ilce, lat, lon, gunler]) => ({ id, ad, ilce, lat, lon, gunler, saat: "" }));
+
+  const DISTRICTS = {
+    "Bursa": [["Osmangazi", 40.1885, 29.0610], ["Nilüfer", 40.2140, 28.9850], ["Yıldırım", 40.1920, 29.1050], ["Gürsu", 40.2200, 29.1900], ["Kestel", 40.1990, 29.2130], ["Mudanya", 40.3750, 28.8830], ["Gemlik", 40.4320, 29.1560], ["İnegöl", 40.0780, 29.5100]],
+    "İzmir": [["Konak", 38.4189, 27.1287], ["Karşıyaka", 38.4596, 27.1150], ["Bornova", 38.4622, 27.2160], ["Buca", 38.3880, 27.1750], ["Bayraklı", 38.4620, 27.1650]],
+  };
+  const DAY_SHORT = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+  const tl = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const $ = (id) => document.getElementById(id);
+  function h(tag, props, ...kids) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(props || {})) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "text") el.textContent = v;
+      else if (k.startsWith("on")) el[k] = v;
+      else el.setAttribute(k, v === true ? "" : String(v));
+    }
+    for (const kid of kids.flat()) if (kid != null) el.append(kid);
+    return el;
+  }
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } },
+  };
+  async function getJSON(url) {
+    const r = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!r.ok || !(r.headers.get("content-type") || "").includes("json")) throw new Error(String(r.status));
+    return r.json();
+  }
+  const isoToday = () => ((new Date().getDay() + 6) % 7) + 1;
+  const trDate = (iso) => iso ? iso.split("-").reverse().join(".") : "";
+  function haversineKm(a, b) {
+    const R = 6371, rad = (x) => x * Math.PI / 180;
+    const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+    const s = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(s));
+  }
+
+  const state = {
+    city: store.get("hal.city", "Bursa"),
+    view: store.get("hal.view", "fiyatlar"),
+    category: "Tümü", query: "",
+    bulten: null, pazarlar: [], demo: false,
+    origin: null, originLabel: "",
+  };
+
+  async function loadCity(city) {
+    state.city = city; store.set("hal.city", city);
+    $("city").value = city;
+    try {
+      const [b, p] = await Promise.all([
+        getJSON(`/api/bulten?sehir=${encodeURIComponent(city)}`),
+        getJSON(`/api/pazarlar?sehir=${encodeURIComponent(city)}`),
+      ]);
+      state.bulten = b; state.pazarlar = p.pazarlar || []; state.demo = false;
+    } catch {
+      state.demo = true;
+      state.bulten = city === "Bursa" ? DEMO_BULTEN : { ...DEMO_BULTEN, sehir: city, urunler: [] };
+      state.pazarlar = city === "Bursa" ? DEMO_PAZARLAR : [];
+    }
+    $("demo").hidden = !state.demo;
+    fillDistricts();
+    renderBulletin(); renderCategories(); renderPrices(); renderMarkets();
+  }
+
+  function renderBulletin() {
+    const b = state.bulten;
+    const el = $("bulletin"); el.textContent = "";
+    if (!b || !b.tarih) { el.textContent = "Bu şehir için bülten yok."; return; }
+    el.append(h("strong", { text: `${trDate(b.tarih)} bülteni` }),
+              ` · ${b.urunler.length} ürün` + (b.onceki_tarih ? ` · değişim ${trDate(b.onceki_tarih)}'e göre` : ""));
+    $("price-source").textContent = b.kaynak ? `Kaynak: ${b.kaynak} hal fiyatları. Ortalama = (en düşük + en yüksek) / 2.` : "";
+  }
+
+  function renderCategories() {
+    const counts = new Map([["Tümü", state.bulten?.urunler.length || 0]]);
+    for (const u of state.bulten?.urunler || []) counts.set(u.kategori, (counts.get(u.kategori) || 0) + 1);
+    if (!counts.has(state.category)) state.category = "Tümü";
+    const box = $("cats"); box.textContent = "";
+    for (const [name, n] of counts) {
+      const b = h("button", { class: "chip", type: "button", "aria-pressed": String(name === state.category) },
+                  name, h("small", { text: String(n) }));
+      b.addEventListener("click", () => { state.category = name; renderCategories(); renderPrices(); });
+      box.append(b);
+    }
+  }
+
+  function deltaBadge(pct) {
+    if (pct == null) return h("span", { class: "delta flat", text: "yeni" });
+    if (Math.abs(pct) < 0.05) return h("span", { class: "delta flat", text: "değişmedi" });
+    return pct > 0 ? h("span", { class: "delta up", text: `▲ %${tl.format(pct)}` })
+                   : h("span", { class: "delta down", text: `▼ %${tl.format(-pct)}` });
+  }
+
+  function renderPrices() {
+    const box = $("price-groups"); box.textContent = "";
+    const q = state.query.toLocaleLowerCase("tr");
+    const items = (state.bulten?.urunler || []).filter(u =>
+      (state.category === "Tümü" || u.kategori === state.category) &&
+      (!q || u.urun.toLocaleLowerCase("tr").includes(q)));
+    if (!items.length) { box.append(h("div", { class: "list" }, h("p", { class: "empty", text: "Eşleşen ürün yok." }))); return; }
+    const groups = new Map();
+    for (const u of items) (groups.get(u.kategori) || groups.set(u.kategori, []).get(u.kategori)).push(u);
+    for (const [cat, list] of groups) {
+      if (state.category === "Tümü") box.append(h("p", { class: "section-label", text: cat }));
+      box.append(h("ul", { class: "list" }, list.map(u => h("li", { class: "row", style: "cursor:pointer;", onclick: () => showChart(u.urun) },
+        h("span", { class: "name", text: u.urun }),
+        h("span", { class: "meta", text: u.asgari === u.azami
+            ? `${u.birim} · tek fiyat`
+            : `${u.birim} · ${tl.format(u.asgari)}–${tl.format(u.azami)} ₺` }),
+        h("span", { class: "price" },
+          h("span", { class: "avg" }, tl.format(u.ortalama), h("span", { text: "₺" })),
+          deltaBadge(u.degisim_yuzde))))));
+    }
+  }
+
+  function fillDistricts() {
+    const sel = $("district"); sel.textContent = "";
+    sel.append(h("option", { value: "", text: "ya da ilçe seçin" }));
+    for (const [name] of DISTRICTS[state.city] || []) sel.append(h("option", { value: name, text: name }));
+  }
+
+  function setOrigin(origin, label) {
+    state.origin = origin; state.originLabel = label;
+    $("loc-status").textContent = label;
+    renderMarkets();
+  }
+
+  function showChart(urunAdi) {
+    const modal = h("div", { id: "chart-modal", style: "position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;" });
+    const box = h("div", { style: "width:100%;max-width:500px;background:var(--surface);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;padding:16px;" },
+      h("div", { style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;" },
+        h("strong", { text: `${urunAdi} - Fiyat Trendi`, style: "font-size:1.1rem;color:var(--ink);" }),
+        h("button", { class: "btn", style: "padding:6px 12px;font-size:0.8rem;", text: "Kapat", onclick: () => modal.remove() })
+      ),
+      h("div", { id: "chart-content", style: "height:250px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;" }, "Yükleniyor...")
+    );
+    modal.append(box);
+    document.body.append(modal);
+
+    getJSON(`/api/gecmis?sehir=${state.city}&urun=${encodeURIComponent(urunAdi)}`)
+      .then(data => {
+        const content = document.getElementById("chart-content");
+        content.innerHTML = "";
+        if (!data.gecmis || data.gecmis.length < 2) {
+          content.textContent = "Grafik için yeterli geçmiş veri yok. (Veriler her gün biriktikçe burada grafik oluşacak)";
+          return;
+        }
+        
+        const w = 400, hgt = 200, pad = 30;
+        const prices = data.gecmis.map(d => d.fiyat);
+        const min = Math.min(...prices), max = Math.max(...prices);
+        const range = max - min || 1;
+        const stepX = (w - pad * 2) / (data.gecmis.length - 1);
+        
+        let points = "";
+        data.gecmis.forEach((d, i) => {
+          const x = pad + i * stepX;
+          const y = hgt - pad - ((d.fiyat - min) / range) * (hgt - pad * 2);
+          points += `${x},${y} `;
+        });
+
+        const svg = `
+          <svg viewBox="0 0 ${w} ${hgt}" style="width:100%;height:100%;">
+            <polyline fill="none" stroke="var(--accent)" stroke-width="3" points="${points}" />
+            <text x="${pad}" y="${hgt-5}" fill="var(--muted)" font-size="10">${data.gecmis[0].tarih.slice(5)}</text>
+            <text x="${w-pad-30}" y="${hgt-5}" fill="var(--muted)" font-size="10">${data.gecmis[data.gecmis.length-1].tarih.slice(5)}</text>
+            <text x="${pad}" y="${pad}" fill="var(--ink)" font-size="12" font-weight="bold">${max} ₺</text>
+            <text x="${pad}" y="${hgt-pad}" fill="var(--muted)" font-size="12">${min} ₺</text>
+          </svg>
+        `;
+        content.innerHTML = svg;
+      })
+      .catch(() => {
+        document.getElementById("chart-content").textContent = "Grafik verisi alınamadı.";
+      });
+  }
+
+  function renderMarkets() {
+    const today = isoToday(), onlyToday = $("only-today").checked;
+    let list = state.pazarlar.map(p => ({ ...p, km: state.origin ? haversineKm(state.origin, p) : null }));
+    if (onlyToday) list = list.filter(p => p.gunler.includes(today));
+    list.sort((a, b) => (a.km ?? 1e9) - (b.km ?? 1e9) || a.ad.localeCompare(b.ad, "tr"));
+    const ul = $("markets"); ul.textContent = "";
+    if (!state.pazarlar.length) {
+      ul.append(h("li", { class: "empty", text: "Bu şehir için pazar yeri verisi henüz yok." }));
+    } else if (!list.length) {
+      ul.append(h("li", { class: "empty", text: "Bugün kurulan pazar bulunamadı. Filtreyi kapatıp tüm pazarlara bakın." }));
+    }
+    for (const p of list.slice(0, 25)) {
+      const days = h("span", { class: "days", "aria-label": "Kurulduğu günler" },
+        DAY_SHORT.map((d, i) => h("span", {
+          class: "day" + (p.gunler.includes(i + 1) ? " on" : "") + (i + 1 === today ? " today" : ""), text: d })));
+      
+      const route = h("a", { href: `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
+                              target: "_blank", rel: "noopener", text: "Yol Tarifi" });
+      
+      ul.append(h("li", { class: "market" },
+        h("span", { class: "title", text: p.ad }),
+        h("span", { class: "dist", text: p.km == null ? "" : `${tl.format(Math.round(p.km * 10) / 10)} km` }),
+        h("span", { class: "sub" }, p.ilce ? h("span", { text: p.ilce }) : null, days,
+          p.saat ? h("span", { text: p.saat }) : null, route)));
+    }
+    $("market-source").textContent = state.demo
+      ? "Pazar listesi örnektir; gerçek veri osm_pazar.py ile gelir."
+      : "Pazar konumları: © OpenStreetMap katkıcıları (ODbL) ve saha düzeltmeleri.";
+  }
+
+  $("locate").addEventListener("click", () => {
+    if (!("geolocation" in navigator)) { $("loc-status").textContent = "Bu tarayıcı konum vermiyor. İlçe seçin."; return; }
+    $("loc-status").textContent = "Konum alınıyor…";
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setOrigin({ lat: pos.coords.latitude, lon: pos.coords.longitude },
+                         `Konumunuza göre sıralandı (±${Math.round(pos.coords.accuracy)} m).`),
+      () => { $("loc-status").textContent = "Konum izni verilmedi. Listeden ilçenizi seçin."; $("district").focus(); },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+  });
+  $("district").addEventListener("change", (e) => {
+    const d = (DISTRICTS[state.city] || []).find(([n]) => n === e.target.value);
+    if (d) setOrigin({ lat: d[1], lon: d[2] }, `${d[0]} merkezine göre sıralandı.`);
+  });
+  $("only-today").addEventListener("change", renderMarkets);
+
+  function show(view) {
+    state.view = view; store.set("hal.view", view);
+    for (const t of document.querySelectorAll(".tab")) t.setAttribute("aria-selected", String(t.dataset.view === view));
+    for (const v of ["fiyatlar", "pazarlar", "alarmlar"]) $(`view-${v}`).hidden = v !== view;
+  }
+  for (const t of document.querySelectorAll(".tab")) t.addEventListener("click", () => show(t.dataset.view));
+  $("q").addEventListener("input", (e) => { state.query = e.target.value.trim(); renderPrices(); });
+  $("city").addEventListener("change", (e) => loadCity(e.target.value));
+  $("trial").addEventListener("click", () => { $("trial-note").hidden = false; });
+
+  const themeBtn = $("theme-toggle");
+  const currentTheme = store.get("hal.theme", "light");
+  document.documentElement.setAttribute("data-theme", currentTheme);
+  themeBtn.textContent = currentTheme === "dark" ? "☀️" : "🌙";
+  themeBtn.addEventListener("click", () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const newTheme = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    store.set("hal.theme", newTheme);
+    themeBtn.textContent = newTheme === "dark" ? "☀️" : "🌙";
+  });
+
+  if ("serviceWorker" in navigator && window.isSecureContext && window.top === window) {
+    navigator.serviceWorker.register("/sw.js").catch(() => { });
+  }
+
+  show(state.view);
+  loadCity(state.city);
+})();
+</script>

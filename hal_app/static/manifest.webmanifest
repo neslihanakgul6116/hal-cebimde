@@ -1,0 +1,16 @@
+{
+  "name": "Hal Cebimde",
+  "short_name": "Hal Cebimde",
+  "description": "Günlük hal fiyatları ve bugün kurulan en yakın semt pazarları",
+  "lang": "tr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F3F6F0",
+  "theme_color": "#1D4531",
+  "icons": [
+    { "src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
