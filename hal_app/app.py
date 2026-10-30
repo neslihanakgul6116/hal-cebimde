@@ -114,7 +114,36 @@ def gecmis(sehir: CityParam = "Bursa", urun: str = "") -> dict[str, Any]:
                ORDER BY tarih ASC LIMIT 30""", (sehir, urun)
         ).fetchall()
     return {"urun": urun, "gecmis": [{"tarih": r["tarih"], "fiyat": round(r["ortalama"], 2)} for r in rows]}
-
+@app.get("/api/alarm")
+def alarm(sehir: CityParam = "Bursa", urun: str = "") -> dict[str, Any]:
+    """Ürünün son 2 günkü fiyatını karşılaştırıp düşüş var mı diye bakar."""
+    sehir = check_city(sehir)
+    with closing(connect()) as conn:
+        if not table_exists(conn, "hal_bulten") or not urun:
+            return {"mesaj": "Veri yok", "degisim": 0}
+        
+        rows = conn.execute(
+            """SELECT tarih, (CAST(asgari AS REAL) + CAST(azami AS REAL)) / 2 AS ortalama 
+               FROM hal_bulten 
+               WHERE sehir = ? AND urun = ? 
+               ORDER BY tarih DESC LIMIT 2""", (sehir, urun)
+        ).fetchall()
+        
+    if len(rows) < 2:
+        return {"mesaj": "Karşılaştırma için yeterli geçmiş veri yok.", "degisim": 0}
+        
+    yeni_fiyat = rows[0]["ortalama"]
+    eski_fiyat = rows[1]["ortalama"]
+    degisim = ((yeni_fiyat - eski_fiyat) / eski_fiyat) * 100
+    
+    if degisim <= -5:
+        mesaj = f"MÜJDE! Fiyat %{abs(degisim):.1f} düştü!"
+    elif degisim >= 5:
+        mesaj = f"Maalesef fiyat %{degisim:.1f} arttı."
+    else:
+        mesaj = "Fiyat sabit kaldı."
+        
+    return {"mesaj": mesaj, "degisim": round(degisim, 1), "yeni": round(yeni_fiyat, 2)}
 @app.get("/api/pazarlar")
 def pazarlar(sehir: CityParam = "Bursa") -> dict[str, Any]:
     sehir = check_city(sehir)
