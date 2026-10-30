@@ -49,6 +49,7 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
 .list { list-style: none; margin: 0; padding: 0; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 11px 14px; border-top: 1px solid var(--line); }
 .row:first-child { border-top: 0; }
+.row:active { background: var(--chip); }
 .row .name { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .row .meta { grid-column: 1; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .row .price { grid-row: 1 / span 2; grid-column: 2; text-align: right; display: grid; gap: 2px; justify-items: end; }
@@ -70,7 +71,7 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
 .market { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
 .market:first-child { border-top: 0; }
 .market .title { font-weight: 600; min-width: 0; }
-.market .dist { font-family: var(--f-num); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.market .dist { font-family: var(--f-num); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; min-width: 3.5em; }
 .market .sub { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.8rem; color: var(--muted); }
 .days { display: inline-flex; gap: 3px; }
 .day { min-width: 30px; text-align: center; padding: 2px 4px; border-radius: 6px; font-size: 0.72rem; background: var(--chip); color: var(--muted); }
@@ -96,6 +97,12 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
 .tab[aria-selected="true"] { color: var(--ink); }
 .tab[aria-selected="true"] .dot { background: var(--accent); }
 .dot { width: 18px; height: 3px; border-radius: 3px; background: transparent; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+.modal-box { width: 100%; max-width: 500px; background: var(--surface); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 16px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.modal-title { font-size: 1.05rem; color: var(--ink); font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.modal-actions { display: flex; gap: 8px; flex: none; }
+.chart-svg { width: 100%; height: 100%; }
 @media (prefers-reduced-motion: no-preference) {
   .row, .market { animation: rise 0.25s ease-out both; }
   @keyframes rise { from { transform: translateY(4px); } to { transform: none; } }
@@ -107,7 +114,7 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
     <div class="brand">
       <h1>Hal <b>Cebimde</b></h1>
       <div style="display:flex; gap:8px;">
-        <button id="theme-toggle" class="city" style="cursor:pointer; border:none; padding: 4px 8px;" title="Tema Değiştir">🌙</button>
+        <button id="theme-toggle" class="city" style="cursor:pointer; border:none; padding: 4px 8px;" title="Tema Değiştir" aria-label="Tema değiştir">🌙</button>
         <select class="city" id="city" aria-label="Şehir">
           <option value="Bursa">Bursa</option>
           <option value="İzmir">İzmir</option>
@@ -121,14 +128,14 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
 <main>
   <p class="demo" id="demo" hidden>Örnek veri gösteriliyor. Gerçek fiyatlar ve pazarlar için yerel sunucuyu çalıştırın.</p>
 
-  <section class="view" id="view-fiyatlar" aria-label="Fiyatlar">
+  <section class="view" id="view-fiyatlar" role="tabpanel" aria-labelledby="tab-fiyatlar" aria-label="Fiyatlar">
     <input class="search" id="q" type="search" placeholder="Ürün ara: domates, hamsi…" autocomplete="off" aria-label="Ürün ara">
     <div class="chips" id="cats" role="group" aria-label="Kategori"></div>
     <div id="price-groups" class="view"></div>
     <p class="foot" id="price-source"></p>
   </section>
 
-  <section class="view" id="view-pazarlar" aria-label="Pazarlar" hidden>
+  <section class="view" id="view-pazarlar" role="tabpanel" aria-labelledby="tab-pazarlar" aria-label="Pazarlar" hidden>
     <div class="locate">
       <h2>Bugün yakınınızda hangi pazar kurulu?</h2>
       <div class="loc-row">
@@ -142,7 +149,7 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
     <p class="foot" id="market-source"></p>
   </section>
 
-  <section class="view" id="view-alarmlar" aria-label="Alarmlar" hidden>
+  <section class="view" id="view-alarmlar" role="tabpanel" aria-labelledby="tab-alarmlar" aria-label="Alarmlar" hidden>
     <div class="lock">
       <h2>Fiyat düşünce sabah 06:00'da haber alın</h2>
       <p>İşletme paketleriyle takip listesi, fiyat alarmı, 30 günlük trend ve kâr marjı hesabı açılır.</p>
@@ -156,34 +163,37 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
         <div class="plan"><span>Pro</span><b>699 ₺/ay</b><small>şehir kıyası, dışa aktarım</small></div>
       </div>
       <button class="btn" id="trial" type="button">14 gün ücretsiz dene</button>
-      <p class="note" id="trial-note" hidden>Abonelik adımı Faz 2'de açılacak. Şimdilik bu ekran tasarım önizlemesidir.</p>
+      <p class="note" id="trial-note" hidden></p>
     </div>
   </section>
 </main>
 
 <nav class="nav" aria-label="Bölümler">
   <div class="nav-inner" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-view="fiyatlar" type="button">
+    <button class="tab" id="tab-fiyatlar" role="tab" aria-selected="true" aria-controls="view-fiyatlar" data-view="fiyatlar" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.6"/></svg>
       Fiyatlar<span class="dot"></span>
     </button>
-    <button class="tab" role="tab" aria-selected="false" data-view="pazarlar" type="button">
+    <button class="tab" id="tab-pazarlar" role="tab" aria-selected="false" aria-controls="view-pazarlar" data-view="pazarlar" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
       Pazarlar<span class="dot"></span>
     </button>
-    <button class="tab" role="tab" aria-selected="false" data-view="alarmlar" type="button">
+    <button class="tab" id="tab-alarmlar" role="tab" aria-selected="false" aria-controls="view-alarmlar" data-view="alarmlar" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
       Alarmlar<span class="dot"></span>
     </button>
   </div>
 </nav>
-
 <script>
 (() => {
   "use strict";
 
+  // ---------- DEMO VERİSİ (tarihler dinamik) ----------
+  const todayIso = () => new Date().toISOString().slice(0, 10);
+  const yesterdayIso = () => new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
   const DEMO_BULTEN = {
-    sehir: "Bursa", tarih: "2026-10-27", onceki_tarih: "2026-10-26",
+    sehir: "Bursa", tarih: todayIso(), onceki_tarih: yesterdayIso(),
     kaynak: "Bursa Büyükşehir Belediyesi",
     urunler: [
       ["Meyve", "Ahududu", "Kg", 200, 240, 4.3], ["Meyve", "Armut", "Kg", 10, 80, 0],
@@ -199,6 +209,7 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
     ].map(([kategori, urun, birim, asgari, azami, degisim]) =>
       ({ kategori, urun, birim, asgari, azami, ortalama: (asgari + azami) / 2, degisim_yuzde: degisim })),
   };
+
   const DEMO_PAZARLAR = [
     ["demo-1", "Örnek Pazar · Osmangazi", "Osmangazi", 40.1902, 29.0525, [2, 6]],
     ["demo-2", "Örnek Pazar · Nilüfer", "Nilüfer", 40.2185, 28.9772, [2]],
@@ -243,6 +254,10 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
   }
   const isoToday = () => ((new Date().getDay() + 6) % 7) + 1;
   const trDate = (iso) => iso ? iso.split("-").reverse().join(".") : "";
+
+  // Türkçe karakter normalizasyonu — "istanbul" araması "İSTANBUL"u bulur
+  const norm = (s) => s.toLocaleLowerCase("tr").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i");
+
   function haversineKm(a, b) {
     const R = 6371, rad = (x) => x * Math.PI / 180;
     const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
@@ -258,9 +273,12 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
     origin: null, originLabel: "",
   };
 
+  // ---------- YÜKLEME ----------
   async function loadCity(city) {
     state.city = city; store.set("hal.city", city);
     $("city").value = city;
+    state.origin = null; state.originLabel = "";
+    $("loc-status").textContent = "Konum telefonunuzda kalır; sunucuya gönderilmez.";
     try {
       const [b, p] = await Promise.all([
         getJSON(`/api/bulten?sehir=${encodeURIComponent(city)}`),
@@ -269,8 +287,11 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
       state.bulten = b; state.pazarlar = p.pazarlar || []; state.demo = false;
     } catch {
       state.demo = true;
-      state.bulten = city === "Bursa" ? DEMO_BULTEN : { ...DEMO_BULTEN, sehir: city, urunler: [] };
-      state.pazarlar = city === "Bursa" ? DEMO_PAZARLAR : [];
+      state.bulten = { ...DEMO_BULTEN, sehir: city };
+      state.pazarlar = DEMO_PAZARLAR.map(p => ({ ...p, gunler: [...p.gunler] }));
+      // Demo'da mutlaka bugün bir pazar kurulu olsun
+      const today = isoToday();
+      state.pazarlar.forEach(p => { if (!p.gunler.includes(today)) p.gunler.push(today); });
     }
     $("demo").hidden = !state.demo;
     fillDistricts();
@@ -280,10 +301,12 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
   function renderBulletin() {
     const b = state.bulten;
     const el = $("bulletin"); el.textContent = "";
-    if (!b || !b.tarih) { el.textContent = "Bu şehir için bülten yok."; return; }
+    if (!b || !b.tarih) { el.textContent = "Bu şehir için bülten yok."; $("price-source").textContent = ""; return; }
     el.append(h("strong", { text: `${trDate(b.tarih)} bülteni` }),
               ` · ${b.urunler.length} ürün` + (b.onceki_tarih ? ` · değişim ${trDate(b.onceki_tarih)}'e göre` : ""));
-    $("price-source").textContent = b.kaynak ? `Kaynak: ${b.kaynak} hal fiyatları. Ortalama = (en düşük + en yüksek) / 2.` : "";
+    $("price-source").textContent = b.kaynak
+      ? `Kaynak: ${b.kaynak} hal fiyatları. Ortalama = (en düşük + en yüksek) / 2.${state.demo ? " (Örnek veri)" : ""}`
+      : "";
   }
 
   function renderCategories() {
@@ -306,18 +329,26 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
                    : h("span", { class: "delta down", text: `▼ %${tl.format(-pct)}` });
   }
 
+  // DÜZELTME: Map gruplama hatası giderildi
   function renderPrices() {
     const box = $("price-groups"); box.textContent = "";
-    const q = state.query.toLocaleLowerCase("tr");
+    const q = norm(state.query);
     const items = (state.bulten?.urunler || []).filter(u =>
       (state.category === "Tümü" || u.kategori === state.category) &&
-      (!q || u.urun.toLocaleLowerCase("tr").includes(q)));
+      (!q || norm(u.urun).includes(q)));
     if (!items.length) { box.append(h("div", { class: "list" }, h("p", { class: "empty", text: "Eşleşen ürün yok." }))); return; }
     const groups = new Map();
-    for (const u of items) (groups.get(u.kategori) || groups.set(u.kategori, []).get(u.kategori)).push(u);
+    for (const u of items) {
+      if (!groups.has(u.kategori)) groups.set(u.kategori, []);
+      groups.get(u.kategori).push(u);
+    }
     for (const [cat, list] of groups) {
       if (state.category === "Tümü") box.append(h("p", { class: "section-label", text: cat }));
-      box.append(h("ul", { class: "list" }, list.map(u => h("li", { class: "row", style: "cursor:pointer;", onclick: () => showChart(u.urun) },
+      box.append(h("ul", { class: "list" }, list.map(u => h("li", {
+          class: "row", style: "cursor:pointer;",
+          onclick: () => showChart(u.urun),
+          title: `${u.urun} fiyat geçmişini gör`
+        },
         h("span", { class: "name", text: u.urun }),
         h("span", { class: "meta", text: u.asgari === u.azami
             ? `${u.birim} · tek fiyat`
@@ -340,57 +371,96 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
     renderMarkets();
   }
 
+  // ---------- GRAFİK MODALI (erişilebilir + demo fallback) ----------
   function showChart(urunAdi) {
-    const modal = h("div", { id: "chart-modal", style: "position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;" });
-    const box = h("div", { style: "width:100%;max-width:500px;background:var(--surface);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;padding:16px;" },
-      h("div", { style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;" },
-        h("strong", { text: `${urunAdi} - Fiyat Trendi`, style: "font-size:1.1rem;color:var(--ink);" }),
-       h("div", { style: "display:flex; gap:8px;" },
-  h("button", { class: "btn accent", style: "padding:6px 12px;font-size:0.8rem;", text: "🔔 Alarm Kur", onclick: () => checkAlarm(urunAdi) }),
-  h("button", { class: "btn", style: "padding:6px 12px;font-size:0.8rem;", text: "Kapat", onclick: () => modal.remove() })
-)
+    const modal = h("div", { class: "modal-backdrop", role: "dialog", "aria-modal": "true", "aria-label": `${urunAdi} fiyat grafiği` });
+    const box = h("div", { class: "modal-box" },
+      h("div", { class: "modal-head" },
+        h("strong", { class: "modal-title", text: `${urunAdi} · Fiyat Trendi` }),
+        h("div", { class: "modal-actions" },
+          h("button", { class: "btn accent", style: "padding:6px 12px;font-size:0.8rem;", text: "🔔 Alarm Kur", onclick: () => checkAlarm(urunAdi) }),
+          h("button", { class: "btn", style: "padding:6px 12px;font-size:0.8rem;", text: "Kapat", onclick: () => closeModal() })
+        )
       ),
-      h("div", { id: "chart-content", style: "height:250px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;" }, "Yükleniyor...")
+      h("div", { id: "chart-content", style: "height:250px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:8px;" }, "Yükleniyor...")
     );
     modal.append(box);
     document.body.append(modal);
+    document.body.style.overflow = "hidden";
+
+    const closeModal = () => {
+      modal.remove();
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
+    };
+    const onKey = (e) => { if (e.key === "Escape") closeModal(); };
+    document.addEventListener("keydown", onKey);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+    const renderChart = (gecmis) => {
+      const content = document.getElementById("chart-content");
+      content.innerHTML = "";
+      if (!gecmis || gecmis.length < 2) {
+        content.textContent = "Grafik için yeterli geçmiş veri yok. Veriler her gün biriktikçe burada grafik oluşacak.";
+        return;
+      }
+      const w = 400, hgt = 200, pad = 30;
+      const prices = gecmis.map(d => d.fiyat);
+      const min = Math.min(...prices), max = Math.max(...prices);
+      const range = max - min || 1;
+      const stepX = (w - pad * 2) / (gecmis.length - 1);
+      let points = "";
+      gecmis.forEach((d, i) => {
+        const x = pad + i * stepX;
+        const y = hgt - pad - ((d.fiyat - min) / range) * (hgt - pad * 2);
+        points += `${x},${y} `;
+      });
+      const first = gecmis[0].tarih.slice(5);
+      const last = gecmis[gecmis.length - 1].tarih.slice(5);
+      content.innerHTML = `
+        <svg class="chart-svg" viewBox="0 0 ${w} ${hgt}" role="img" aria-label="${urunAdi} fiyat grafiği, ${first} - ${last}">
+          <title>${urunAdi} fiyat grafiği</title>
+          <polyline fill="none" stroke="var(--accent)" stroke-width="3" points="${points}" />
+          <text x="${pad}" y="${hgt - 5}" fill="var(--muted)" font-size="10">${first}</text>
+          <text x="${w - pad - 30}" y="${hgt - 5}" fill="var(--muted)" font-size="10">${last}</text>
+          <text x="${pad}" y="${pad}" fill="var(--ink)" font-size="12" font-weight="bold">${tl.format(max)} ₺</text>
+          <text x="${pad}" y="${hgt - pad}" fill="var(--muted)" font-size="12">${tl.format(min)} ₺</text>
+        </svg>`;
+    };
+
+    // Demo modunda sentetik 7 günlük veri
+    if (state.demo) {
+      const base = state.bulten?.urunler?.find(u => u.urun === urunAdi)?.ortalama || 100;
+      const fake = Array.from({ length: 7 }, (_, i) => ({
+        tarih: new Date(Date.now() - (6 - i) * 86400000).toISOString().slice(0, 10),
+        fiyat: Math.round(base * (0.85 + Math.random() * 0.3)),
+      }));
+      renderChart(fake);
+      return;
+    }
 
     getJSON(`/api/gecmis?sehir=${state.city}&urun=${encodeURIComponent(urunAdi)}`)
-      .then(data => {
-        const content = document.getElementById("chart-content");
-        content.innerHTML = "";
-        if (!data.gecmis || data.gecmis.length < 2) {
-          content.textContent = "Grafik için yeterli geçmiş veri yok. (Veriler her gün biriktikçe burada grafik oluşacak)";
-          return;
-        }
-        
-        const w = 400, hgt = 200, pad = 30;
-        const prices = data.gecmis.map(d => d.fiyat);
-        const min = Math.min(...prices), max = Math.max(...prices);
-        const range = max - min || 1;
-        const stepX = (w - pad * 2) / (data.gecmis.length - 1);
-        
-        let points = "";
-        data.gecmis.forEach((d, i) => {
-          const x = pad + i * stepX;
-          const y = hgt - pad - ((d.fiyat - min) / range) * (hgt - pad * 2);
-          points += `${x},${y} `;
-        });
+      .then(data => renderChart(data.gecmis))
+      .catch(() => { document.getElementById("chart-content").textContent = "Grafik verisi alınamadı."; });
+  }
 
-        const svg = `
-          <svg viewBox="0 0 ${w} ${hgt}" style="width:100%;height:100%;">
-            <polyline fill="none" stroke="var(--accent)" stroke-width="3" points="${points}" />
-            <text x="${pad}" y="${hgt-5}" fill="var(--muted)" font-size="10">${data.gecmis[0].tarih.slice(5)}</text>
-            <text x="${w-pad-30}" y="${hgt-5}" fill="var(--muted)" font-size="10">${data.gecmis[data.gecmis.length-1].tarih.slice(5)}</text>
-            <text x="${pad}" y="${pad}" fill="var(--ink)" font-size="12" font-weight="bold">${max} ₺</text>
-            <text x="${pad}" y="${hgt-pad}" fill="var(--muted)" font-size="12">${min} ₺</text>
-          </svg>
-        `;
-        content.innerHTML = svg;
-      })
-      .catch(() => {
-        document.getElementById("chart-content").textContent = "Grafik verisi alınamadı.";
-      });
+  // DÜZELTME: checkAlarm tanımlandı, Alarmlar sekmesine yönlendiriyor
+  function checkAlarm(urunAdi) {
+    const alarms = store.get("hal.alarms", []);
+    if (alarms.some(a => a.urun === urunAdi && a.sehir === state.city)) {
+      show("alarmlar");
+      $("trial-note").hidden = false;
+      $("trial-note").textContent = `${urunAdi} için zaten alarm kaydınız var.`;
+      return;
+    }
+    alarms.push({ urun: urunAdi, sehir: state.city, olusturma: Date.now() });
+    store.set("hal.alarms", alarms);
+    show("alarmlar");
+    $("trial-note").hidden = false;
+    $("trial-note").textContent = `${urunAdi} için alarm kaydedildi. Bildirimler abonelikle aktif olacak (Faz 2).`;
+    // Modal varsa kapat
+    const m = document.querySelector(".modal-backdrop");
+    if (m) { m.remove(); document.body.style.overflow = ""; }
   }
 
   function renderMarkets() {
@@ -408,13 +478,11 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
       const days = h("span", { class: "days", "aria-label": "Kurulduğu günler" },
         DAY_SHORT.map((d, i) => h("span", {
           class: "day" + (p.gunler.includes(i + 1) ? " on" : "") + (i + 1 === today ? " today" : ""), text: d })));
-      
       const route = h("a", { href: `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
                               target: "_blank", rel: "noopener", text: "Yol Tarifi" });
-      
       ul.append(h("li", { class: "market" },
         h("span", { class: "title", text: p.ad }),
-        h("span", { class: "dist", text: p.km == null ? "" : `${tl.format(Math.round(p.km * 10) / 10)} km` }),
+        h("span", { class: "dist", text: p.km == null ? "—" : `${tl.format(Math.round(p.km * 10) / 10)} km` }),
         h("span", { class: "sub" }, p.ilce ? h("span", { text: p.ilce }) : null, days,
           p.saat ? h("span", { text: p.saat }) : null, route)));
     }
@@ -423,6 +491,7 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
       : "Pazar konumları: © OpenStreetMap katkıcıları (ODbL) ve saha düzeltmeleri.";
   }
 
+  // ---------- OLAYLAR ----------
   $("locate").addEventListener("click", () => {
     if (!("geolocation" in navigator)) { $("loc-status").textContent = "Bu tarayıcı konum vermiyor. İlçe seçin."; return; }
     $("loc-status").textContent = "Konum alınıyor…";
@@ -446,20 +515,31 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
   for (const t of document.querySelectorAll(".tab")) t.addEventListener("click", () => show(t.dataset.view));
   $("q").addEventListener("input", (e) => { state.query = e.target.value.trim(); renderPrices(); });
   $("city").addEventListener("change", (e) => loadCity(e.target.value));
-  $("trial").addEventListener("click", () => { $("trial-note").hidden = false; });
-
-  const themeBtn = $("theme-toggle");
-  const currentTheme = store.get("hal.theme", "light");
-  document.documentElement.setAttribute("data-theme", currentTheme);
-  themeBtn.textContent = currentTheme === "dark" ? "☀️" : "🌙";
-  themeBtn.addEventListener("click", () => {
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    const newTheme = isDark ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", newTheme);
-    store.set("hal.theme", newTheme);
-    themeBtn.textContent = newTheme === "dark" ? "☀️" : "🌙";
+  $("trial").addEventListener("click", () => {
+    $("trial-note").hidden = false;
+    $("trial-note").textContent = "Abonelik adımı Faz 2'de açılacak. Şimdilik bu ekran tasarım önizlemesidir.";
   });
 
+  // ---------- TEMA ----------
+  const themeBtn = $("theme-toggle");
+  const savedTheme = store.get("hal.theme", null);
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  const applyThemeLabel = () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark" ||
+      (!document.documentElement.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    themeBtn.textContent = isDark ? "☀️" : "🌙";
+  };
+  applyThemeLabel();
+  themeBtn.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const isDark = current === "dark" || (!current && matchMedia("(prefers-color-scheme: dark)").matches);
+    const next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("hal.theme", next);
+    applyThemeLabel();
+  });
+
+  // ---------- SERVICE WORKER (sw.js varsa) ----------
   if ("serviceWorker" in navigator && window.isSecureContext && window.top === window) {
     navigator.serviceWorker.register("/sw.js").catch(() => { });
   }
