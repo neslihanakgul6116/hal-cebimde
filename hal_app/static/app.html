@@ -345,7 +345,10 @@ main { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-i
     const box = h("div", { style: "width:100%;max-width:500px;background:var(--surface);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;padding:16px;" },
       h("div", { style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;" },
         h("strong", { text: `${urunAdi} - Fiyat Trendi`, style: "font-size:1.1rem;color:var(--ink);" }),
-        h("button", { class: "btn", style: "padding:6px 12px;font-size:0.8rem;", text: "Kapat", onclick: () => modal.remove() })
+       h("div", { style: "display:flex; gap:8px;" },
+  h("button", { class: "btn accent", style: "padding:6px 12px;font-size:0.8rem;", text: "🔔 Alarm Kur", onclick: () => checkAlarm(urunAdi) }),
+  h("button", { class: "btn", style: "padding:6px 12px;font-size:0.8rem;", text: "Kapat", onclick: () => modal.remove() })
+)
       ),
       h("div", { id: "chart-content", style: "height:250px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;" }, "Yükleniyor...")
     );
